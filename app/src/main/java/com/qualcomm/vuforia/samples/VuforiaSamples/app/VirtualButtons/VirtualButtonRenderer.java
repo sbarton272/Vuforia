@@ -203,6 +203,7 @@ public class VirtualButtonRenderer implements GLSurfaceView.Renderer
         {
             // Get the trackable:
             TrackableResult trackableResult = state.getTrackableResult(0);
+
             float[] modelViewMatrix = Tool.convertPose2GLMatrix(
                 trackableResult.getPose()).getData();
             
@@ -404,7 +405,6 @@ public class VirtualButtonRenderer implements GLSurfaceView.Renderer
         return bb;
         
     }
-    
     
     public void setTextures(Vector<Texture> textures)
     {

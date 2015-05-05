@@ -13,10 +13,14 @@ import java.util.Vector;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.qualcomm.vuforia.Matrix44F;
 import com.qualcomm.vuforia.Renderer;
@@ -67,8 +71,11 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
     boolean mIsActive = false;
     
     private static final float OBJECT_SCALE_FLOAT = 3.0f;
-    
-    
+
+    private boolean mSeenOrigami1 = false;
+    private boolean mActiveWindow = false;
+    private String mCurTarget = "";
+
     public ImageTargetRenderer(ImageTargets activity,
         SampleApplicationSession session)
     {
@@ -197,12 +204,26 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
             Matrix44F modelViewMatrix_Vuforia = Tool
                 .convertPose2GLMatrix(result.getPose());
             float[] modelViewMatrix = modelViewMatrix_Vuforia.getData();
-            
-            int textureIndex = trackable.getName().equalsIgnoreCase("stones") ? 0
-                : 1;
-            textureIndex = trackable.getName().equalsIgnoreCase("tarmac") ? 2
-                : textureIndex;
-            
+
+            // Choose texture index
+            String trackableName = trackable.getName().toLowerCase();
+            int textureIndex = 0;
+            boolean changed = changeTarget(trackableName);
+            if (trackableName.equals("stones")) {
+                textureIndex = 1;
+            } else if(trackableName.equals("tarmac")) {
+                textureIndex = 2;
+            } else if(trackableName.equals("origami1")) {
+                textureIndex = 0;
+                mSeenOrigami1 = true;
+            } else if(trackableName.equals("origami2")) {
+                if (mSeenOrigami1 && changed) popupVideo();
+                textureIndex = 1;
+            } else if(trackableName.equals("origami3")) {
+                if (mSeenOrigami1 && changed) popupQuit();
+                textureIndex = 2;
+            }
+
             // deal with the modelview and projection matrices
             float[] modelViewProjection = new float[16];
             
@@ -291,8 +312,73 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
         
         mRenderer.end();
     }
-    
-    
+
+    private void popupVideo() {
+        if (!mActiveWindow) {
+            mActiveWindow = true;
+            mActivity.runOnUiThread(new Runnable() {
+                public void run() {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                    builder
+                            .setTitle("Origami 2")
+                            .setMessage("Would you like to play a video?")
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Yes button clicked, do something
+                                    Toast.makeText(mActivity, "Yes button pressed",
+                                            Toast.LENGTH_SHORT).show();
+                                    mActiveWindow = false;
+                                    mActivity.startActivity(new Intent("com.qualcomm.vuforia.samples.VideoPlayback.START"));
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mActiveWindow = false;
+                                }
+                            })
+                            .show();
+                }
+            });
+        }
+    }
+
+    private void popupQuit() {
+        if (!mActiveWindow) {
+            mActiveWindow = true;
+            mActivity.runOnUiThread(new Runnable() {
+                public void run() {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                    builder
+                            .setTitle("Origami 3")
+                            .setMessage("Would you like to quit?")
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Yes button clicked, do something
+                                    Toast.makeText(mActivity, "Yes button pressed",
+                                            Toast.LENGTH_SHORT).show();
+                                    mActiveWindow = false;
+                                    mActivity.finish();
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mActiveWindow = false;
+                                }
+                            })
+                            .show();
+                }
+            });
+        }
+    }
+
+    private boolean changeTarget(String targetName) {
+        boolean eql = targetName.equals(mCurTarget);
+        mCurTarget = targetName;
+        return !eql;
+    }
+
     private void printUserData(Trackable trackable)
     {
         String userData = (String) trackable.getUserData();

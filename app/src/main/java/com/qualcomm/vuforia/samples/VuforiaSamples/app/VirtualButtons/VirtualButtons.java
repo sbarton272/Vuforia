@@ -60,7 +60,8 @@ public class VirtualButtons extends Activity implements
     SampleApplicationControl, SampleAppMenuInterface
 {
     private static final String LOGTAG = "VirtualButtons";
-    
+    private static final String DATA_SET_XML = "test.xml";
+
     SampleApplicationSession vuforiaAppSession;
     
     // Our OpenGL view:
@@ -692,7 +693,7 @@ public class VirtualButtons extends Activity implements
         }
         
         // Load the data set:
-        if (!dataSet.load("VirtualButtons/Wood.xml",
+        if (!dataSet.load(DATA_SET_XML,
             STORAGE_TYPE.STORAGE_APPRESOURCE))
         {
             Log.d(LOGTAG, "Failed to load data set.");

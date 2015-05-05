@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
+<QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="com.qualcomm.qcar.qcar_config.xsd">
   <Tracking>
-    <ImageTarget name="origami3" size="6.000000 4.693608" />
-    <ImageTarget name="origami2" size="6.000000 5.161422" />
-    <ImageTarget name="origami1" size="6.000000 5.926441" />
+    <ImageTarget name="origami3" size="247.000000 237.951599" >
+        <VirtualButton name="yes" rectangle="-45.28 -53.52 -12.35 -65.87" enabled="true" />
+        <VirtualButton name="no" rectangle="14.82 -53.52 47.75 -65.87" enabled="true" />
+    </ImageTarget>
+    <ImageTarget name="origami2" size="247.000000 212.478546" >
+        <VirtualButton name="yes" rectangle="-45.28 -53.52 -12.35 -65.87" enabled="true" />
+        <VirtualButton name="no" rectangle="14.82 -53.52 47.75 -65.87" enabled="true" />
+    </ImageTarget>
+    <ImageTarget name="origami1" size="247.000000 243.971802" />
   </Tracking>
 </QCARConfig>
